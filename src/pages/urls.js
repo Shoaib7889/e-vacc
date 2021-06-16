@@ -1,0 +1,1 @@
+export const COUCHDB_BASE_URL ='http://localhost:5984';
