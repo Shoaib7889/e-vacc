@@ -20,22 +20,26 @@ import Widget from "../../../components/Widget/Widget";
 import s from "./Static.module.scss";
 import { Drawer } from "antd";
 
+import { COUCHDB_BASE_URL } from '../../urls';
+// import { uuid } from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
+var md5 = require('md5');
+const axios = require('axios');
+global.Buffer = global.Buffer || require('buffer').Buffer
+
+
 class Workers extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      records:[],
       tableStyles: [
         {
           id: 1,
-          picture: require("../../../images/tables/1.png"), // eslint-disable-line global-require
-          description: "Palo Alto",
-          info: {
-            type: "Shoaib",
-            dimensions: "200x150",
-          },
-          date: 'Kasur',
-          size: "45.6 KB",
+          name:'Shaoib',
+          address:'Lahore',
+          contact:'2323'
           progress: {
             percent: 100,
             colorClass: "success",
@@ -43,14 +47,9 @@ class Workers extends React.Component {
         },
         {
           id: 2,
-          picture: require("../../../images/tables/2.png"), // eslint-disable-line global-require
-          description: "The Sky",
-          info: {
-            type: "Huzaifa",
-            dimensions: "2400x1455",
-          },
-          date: 'Miawali',
-          size: "15.3 MB",
+          name:'Shaoib',
+          address:'Lahore',
+          contact:'2323'
           progress: {
             percent: 100,
             colorClass: "success",
@@ -58,18 +57,9 @@ class Workers extends React.Component {
         },
         {
           id: 3,
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Down the road",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
-          info: {
-            type: "Hamza",
-            dimensions: "200x150",
-          },
-          date: 'Lahore',
-          size: "49.0 KB",
+          name:'Shaoib',
+          address:'Lahore',
+          contact:'2323'
           progress: {
             percent: 38,
             colorClass: "inverse",
@@ -77,14 +67,9 @@ class Workers extends React.Component {
         },
         {
           id: 4,
-          picture: require("../../../images/tables/4.png"), // eslint-disable-line global-require
-          description: "The Edge",
-          info: {
-            type: "Ali Ahmad",
-            dimensions: "210x160",
-          },
-          date: 'Okara',
-          size: "69.1 KB",
+          name:'Shaoib',
+          address:'Lahore',
+          contact:'2323'
           progress: {
             percent: 100,
             colorClass: "success",
@@ -92,14 +77,9 @@ class Workers extends React.Component {
         },
         {
           id: 5,
-          picture: require("../../../images/tables/5.png"), // eslint-disable-line global-require
-          description: "Fortress",
-          info: {
-            type: "Bushra SAleem",
-            dimensions: "1452x1320",
-          },
-          date: 'Lahore',
-          size: "2.3 MB",
+          name:'Shaoib',
+          address:'Lahore',
+          contact:'2323'
           progress: {
             percent: 100,
             colorClass: "success",
@@ -116,6 +96,29 @@ class Workers extends React.Component {
     this.toggle = this.toggle.bind(this);
   }
 
+  componentDidMount(){
+    const token = Buffer.from(`${"admin"}:${"password"}`, 'utf8').toString('base64')
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${token}`,
+      }
+ 
+        const uid = uuid();
+      axios.get(`${COUCHDB_BASE_URL}/e-vaccination/_all_docs`,{
+        headers: headers
+      }).then(async response=>{
+          console.log(response.data)
+          if(response.data.length>0){
+            this.setState({records:response.data.rows})
+          }
+          return;
+        
+      }).catch(e=>{
+        console.log("Fdsa")
+        // alert('ok')
+      })    
+  }
+
   toggle = () => {
     this.setState({ visible: !this.state.visible });
     // alert('grrrrr');
@@ -124,13 +127,13 @@ class Workers extends React.Component {
     this.setState({ visible: false });
   };
 
-  parseDate(date) {
-    this.dateSet = date.toDateString().split(" ");
+  // parseDate(date) {
+  //   this.dateSet = date.toDateString().split(" ");
 
-    return `${date.toLocaleString("en-us", { month: "long" })} ${
-      this.dateSet[2]
-    }, ${this.dateSet[3]}`;
-  }
+  //   return `${date.toLocaleString("en-us", { month: "long" })} ${
+  //     this.dateSet[2]
+  //   }, ${this.dateSet[3]}`;
+  // }
 
   checkAll(ev, checkbox) {
     const checkboxArr = new Array(this.state[checkbox].length).fill(
@@ -182,8 +185,6 @@ class Workers extends React.Component {
                 <thead>
                   <tr className="fs-sm">
                     <th className="hidden-sm-down">#</th>
-                    {/* <th>Picture</th> */}
-                    {/* <th>Description</th> */}
                     <th className="hidden-sm-down">Name</th>
                     <th className="hidden-sm-down">Address</th>
                     <th className="hidden-sm-down">Contact</th>
@@ -191,26 +192,38 @@ class Workers extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.tableStyles.map((row) => (
+                  {this.state.records.length>0 ? this.state.records.map((row) => (
                     <tr key={row.id}>
                       <td>{row.id}</td>
-                      {/* <td>
-                        <img
-                          className="img-rounded"
-                          src={row.picture}
-                          alt=""
-                          height="50"
-                        />
-                      </td> */}
                       
                       <td>
                         <p className="mb-0">
-                          {row.info.type}
+                          {row.name}
                         </p>
                         
                       </td>
-                      <td className="text-muted">{(row.date)}</td>
-                      <td className="text-muted">{row.size}</td>
+                      <td className="text-muted">{(row.address)}</td>
+                      <td className="text-muted">{row.contact}</td>
+                      <td className="width-150">
+                        <Progress
+                          color={row.progress.colorClass}
+                          value={row.progress.percent}
+                          className="progress-sm mb-xs"
+                        />
+                      </td>
+                    </tr>
+                  )): this.state.tableStyles.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.id}</td>
+                      
+                      <td>
+                        <p className="mb-0">
+                          {row.name}
+                        </p>
+                        
+                      </td>
+                      <td className="text-muted">{(row.address)}</td>
+                      <td className="text-muted">{row.contact}</td>
                       <td className="width-150">
                         <Progress
                           color={row.progress.colorClass}

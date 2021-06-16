@@ -2,7 +2,9 @@ import { REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from '../actions
 
 export default function register(state = {
     isFetching: false,
-    errorMessage: ''
+    errorMessage: '',
+    email:'',
+    password:''
 }, action) {
     switch (action.type) {
         case REGISTER_REQUEST:
@@ -11,6 +13,8 @@ export default function register(state = {
             });
         case REGISTER_SUCCESS:
             return Object.assign({}, state, {
+                // email:action.payload.email,
+                // password:action.payload.password,
                 isFetching: false,
                 errorMessage: '',
             });

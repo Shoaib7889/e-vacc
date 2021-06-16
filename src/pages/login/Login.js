@@ -75,11 +75,7 @@ class Login extends React.Component {
                             <FormGroup className="mt">
                                 <Label for="email">Email</Label>
                                 <InputGroup className="input-group-no-border">
-                                    <InputGroupAddon addonType="prepend">
-                                        <InputGroupText>
-                                            <i className="la la-user text-white"/>
-                                        </InputGroupText>
-                                    </InputGroupAddon>
+                                    
                                     <Input id="email" className="input-transparent pl-3" value={this.state.email} onChange={this.changeEmail} type="email"
                                            required name="email" placeholder="Email"/>
                                 </InputGroup>
@@ -87,11 +83,7 @@ class Login extends React.Component {
                             <FormGroup>
                                 <Label for="password">Password</Label>
                                 <InputGroup className="input-group-no-border">
-                                    <InputGroupAddon addonType="prepend">
-                                        <InputGroupText>
-                                            <i className="la la-lock text-white"/>
-                                        </InputGroupText>
-                                    </InputGroupAddon>
+                                    
                                     <Input id="password" className="input-transparent pl-3" value={this.state.password}
                                            onChange={this.changePassword} type="password"
                                            required name="password" placeholder="Password"/>

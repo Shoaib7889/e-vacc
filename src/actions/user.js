@@ -33,19 +33,24 @@ export function logoutUser() {
     return (dispatch) => {
         dispatch(requestLogout());
         localStorage.removeItem('authenticated');
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
         dispatch(receiveLogout());
     };
 }
 
 export function loginUser(creds) {
     return (dispatch) => {
-
+        console.log('in')
         dispatch(receiveLogin());
-
-        if (creds.email.length > 0 && creds.password.length > 0) {
+        const email=localStorage.getItem('email');
+        const password=localStorage.getItem('password');
+        console.log('email ',email,password)
+        if (creds.email ==email && creds.password ==password) {
+            console.log('inside')
             localStorage.setItem('authenticated', true)
         } else {
             dispatch(loginError('Something was wrong. Try again'));
         }
     }
-}
+} 

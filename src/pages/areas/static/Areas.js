@@ -23,18 +23,13 @@ class Areas extends React.Component {
     super(props);
 
     this.state = {
+      areas:[],
       tableStyles: [
         {
           id: 1,
-          name:'#206',
-          picture: require("../../../images/tables/1.png"), // eslint-disable-line global-require
-          description: "Fully Vaccinated",
-          info: {
-            type: "JPEG",
-            dimensions: "200x150",
-          },
-          date: 5,
-          size: "45.6 KB",
+          number:'#23',
+          description:'Fully Vaccinated',
+          population:'3',
           progress: {
             percent: 100,
             colorClass: "success",
@@ -42,15 +37,9 @@ class Areas extends React.Component {
         },
         {
           id: 2,
-          name:'#204',
-          picture: require("../../../images/tables/2.png"), // eslint-disable-line global-require
-          description: "Fully Vaccinated",
-          info: {
-            type: "PSD",
-            dimensions: "2400x1455",
-          },
-          date: 6,
-          size: "15.3 MB",
+          number:'#24',
+          description:'Fully Vaccinated',
+          population:'3',
           progress: {
             percent: 100,
             colorClass: "success",
@@ -58,19 +47,9 @@ class Areas extends React.Component {
         },
         {
           id: 3,
-          name:'#205',
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Partially Vaccinated",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
-          info: {
-            type: "JPEG",
-            dimensions: "200x150",
-          },
-          date: 4,
-          size: "49.0 KB",
+          number:'#25',
+          description:'Partially Vaccinated',
+          population:'3',
           progress: {
             percent: 50,
             colorClass: "danger",
@@ -78,19 +57,9 @@ class Areas extends React.Component {
         },
         {
           id: 4,
-          name:'#205',
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Not Vaccinated",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
-          info: {
-            type: "JPEG",
-            dimensions: "200x150",
-          },
-          date: 4,
-          size: "49.0 KB",
+           number:'#26',
+          description:'Non Vaccinated',
+          population:'3',
           progress: {
             percent: 38,
             colorClass: "inverse",
@@ -98,19 +67,9 @@ class Areas extends React.Component {
         },
         {
           id: 5,
-          name:'#205',
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Not Vaccinated",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
-          info: {
-            type: "JPEG",
-            dimensions: "200x150",
-          },
-          date: 4,
-          size: "49.0 KB",
+          number:'#27',
+          description:'Non Vaccinated',
+          population:'3',
           progress: {
             percent: 38,
             colorClass: "inverse",
@@ -123,6 +82,29 @@ class Areas extends React.Component {
     };
 
     this.checkAll = this.checkAll.bind(this);
+  }
+
+  componentDidMount(){
+    const token = Buffer.from(`${"admin"}:${"password"}`, 'utf8').toString('base64')
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${token}`,
+      }
+ 
+        const uid = uuid();
+      axios.get(`${COUCHDB_BASE_URL}/e-vaccination/_all_docs`,{
+        headers: headers
+      }).then(async response=>{
+          console.log(response.data)
+          if(response.data.length>0){
+            this.setState({areas:response.data.rows})
+          }
+          return;
+        
+      }).catch(e=>{
+        console.log("Fdsa")
+        // alert('ok')
+      })    
   }
 
   parseDate(date) {
@@ -178,28 +160,37 @@ class Areas extends React.Component {
                     <th className="hidden-sm-down">#</th>
                     <th className="hidden-sm-down">Number</th>
                     <th>Description</th>
-                    {/* <th className="hidden-sm-down">#Houses</th> */}
+                    
                     <th className="hidden-sm-down">#Population</th>
-                    {/* <th className="hidden-sm-down">Size</th> */}
+                    
                     <th className="hidden-sm-down">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.tableStyles.map((row) => (
+                  {this.state.area.length>0 ? this.state.areas.map((row) => (
                     <tr key={row.id}>
                       <td>{row.id}</td>
-                      <td>{row.name}</td>
+                      <td>{row.number}</td>
                       <td>
                         {row.description}
-                        {/* {row.label && (
-                          <div>
-                            <Badge color={row.label.colorClass}>
-                              {row.label.text}
-                            </Badge>
-                          </div>
-                        )} */}
                       </td>
-                      <td className="text-muted">{(row.date)}</td>
+                      <td className="text-muted">{(row.population)}</td>
+                      <td className="width-150">
+                        <Progress
+                          color={row.progress.colorClass}
+                          value={row.progress.percent}
+                          className="progress-sm mb-xs"
+                        />
+                      </td>
+                    </tr>
+                  )): this.state.tableStyles.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.id}</td>
+                      <td>{row.number}</td>
+                      <td>
+                        {row.description}
+                      </td>
+                      <td className="text-muted">{(row.population)}</td>
                       <td className="width-150">
                         <Progress
                           color={row.progress.colorClass}

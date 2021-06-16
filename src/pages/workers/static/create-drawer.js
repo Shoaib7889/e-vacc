@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Form, FormGroup } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Label, Form, FormGroup ,
+InputGroup, InputGroupAddon, InputGroupText} from 'reactstrap';
 import { COUCHDB_BASE_URL } from '../../urls';
 // import { uuid } from 'uuid/v4';
 import {v4 as uuid} from 'uuid';
@@ -21,7 +22,7 @@ const AddWorker = (props) => {
         obj[e.target.name] = e.target.value;
         setForm(obj);
     }
-    console.log('e ', form);
+    // console.log('e ', form);
     
 
     async function handleReset() {
@@ -44,6 +45,7 @@ const AddWorker = (props) => {
  
         const uid = uuid();
       axios.put(`${COUCHDB_BASE_URL}/e-vaccination/${uid}`, {
+        'table':'workers',
         'name': name,
         'email': email,
         'password': password,
@@ -55,74 +57,7 @@ const AddWorker = (props) => {
       }).then(async response=>{
           console.log(response.data)
           return;
-        // if(response.data.docs.length > 0){
-        //   var newPass = await md5(await uuidv4())
-        //   // var newPass = await md5("12341234")
-        //   console.log(newPass)
-        //   response.data.docs[0].password = newPass
-        //   axios.put(`${COUCHDB_BASE_URL}/e-vaccination/${response.data.docs[0]._id}`,
-        //     response.data.docs[0]
-        //   ,{
-        //     headers: headers
-        //   }).then((resp)=>{
-        //     if(resp.data.ok){
-        //       Alert.alert(
-        //         "Success!",
-        //         "Password Reset instructions have been sent to your email.",
-        //         [
-        //           {
-        //             text: "Continue",
-        //             onPress: () => {
-        //               navigation.navigate("Login");
-        //             }
-        //           }
-        //         ],
-        //         { cancelable: false }
-        //       );
-        //     }
-        //     else{
-        //       Alert.alert(
-        //         "Error!",
-        //         "Some Error Occured. Please Try Again.",
-        //         [
-        //           {
-        //             text: "Retry",
-        //             onPress: () => console.log("Retry Pressed"),
-        //             style: "cancel"
-        //           }
-        //         ],
-        //         { cancelable: true }
-        //       );
-        //     }
-        //   }).catch(e=>{
-        //     Alert.alert(
-        //       "Error!",
-        //       "Some Error Occured. Please Try Again.",
-        //       [
-        //         {
-        //           text: "Retry",
-        //           onPress: () => console.log("Retry Pressed"),
-        //           style: "cancel"
-        //         }
-        //       ],
-        //       { cancelable: true }
-        //     );
-        //   }) 
-        // }
-        // else{
-        //   Alert.alert(
-        //     "Error!",
-        //     "Your email is not registered with the E-vaccination system.",
-        //     [
-        //       {
-        //         text: "Retry",
-        //         onPress: () => console.log("Retry Pressed"),
-        //         style: "cancel"
-        //       }
-        //     ],
-        //     { cancelable: true }
-        //   );
-        // }
+        
       }).catch(e=>{
         console.log("Fdsa")
         // alert('ok')
@@ -130,7 +65,7 @@ const AddWorker = (props) => {
     }
     }
     
-    const submitHandler = () => {
+    const doLogin = () => {
         handleReset();
     }
 
@@ -139,36 +74,49 @@ const AddWorker = (props) => {
       <Modal isOpen={modal} toggle={toggle} className={className}>
         <ModalHeader toggle={toggle}>Modal title</ModalHeader>
         <ModalBody>
-            <Form >
+            <form onSubmit={doLogin}>
                 <FormGroup>
                     <Label for="examplename">Name</Label>
-                    <Input type="name" name="name" require id="examplename" onChange={e=>inputHandler(e)} placeholder="password placeholder" />
+                    <Input type="name" name="name" required id="examplename" onChange={e=>inputHandler(e)} placeholder="Enter name" />
+                </FormGroup>
+                <FormGroup className="mt">
+                    <Label for="email">Email</Label>
+                    <InputGroup className="input-group-no-border">
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <i className="la la-user text-white"/>
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input id="email" className="input-transparent pl-3" value={form.email} onChange={e=>inputHandler(e)} type="email"
+                               required name="email" placeholder="Email"/>
+                    </InputGroup>
                 </FormGroup>
                 <FormGroup>
-                    <Label for="exampleEmail">Email</Label>
-                    <Input type="email" name="email" require onChange={e=>inputHandler(e)} id="exampleEmail" placeholder="with a placeholder" />
-                </FormGroup>
-                {/* <AvForm onValidSubmit={this.handleValidSubmit} onInvalidSubmit={this.handleInvalidSubmit}>
-                  <AvField name="email" label="Email Address" type="email" required />
-                  <Button color="primary">Submit</Button>
-                </AvForm> */}
-                <FormGroup>
-                    <Label for="examplePassword">Password</Label>
-                    <Input type="password" name="password" require id="examplePassword" onChange={e=>inputHandler(e)} placeholder="password placeholder" />
+                    <Label for="password">Password</Label>
+                    <InputGroup className="input-group-no-border">
+                        <InputGroupAddon addonType="prepend">
+                            <InputGroupText>
+                                <i className="la la-lock text-white"/>
+                            </InputGroupText>
+                        </InputGroupAddon>
+                        <Input id="password" className="input-transparent pl-3" value={form.password}
+                               onChange={e=>inputHandler(e)} type="password"
+                               required name="password" placeholder="Password"/>
+                    </InputGroup>
                 </FormGroup>
                 <FormGroup>
                     <Label for="examplecontact">Contact</Label>
-                    <Input type="contact" name="contact" require id="examplecontact" onChange={e=>inputHandler(e)} placeholder="password placeholder" />
+                    <Input type="contact" name="contact" required id="examplecontact" onChange={e=>inputHandler(e)} placeholder="Enter contact" />
                 </FormGroup>
                 <FormGroup>
                     <Label for="exampleaddress">Address</Label>
-                    <Input type="address" name="address" require id="exampleaddress" onChange={e=>inputHandler(e)} placeholder="password placeholder" />
+                    <Input type="address" name="address" required id="exampleaddress" onChange={e=>inputHandler(e)} placeholder="Enter address" />
                 </FormGroup>
-            </Form>
+            </form>
         </ModalBody>
         <ModalFooter>
             <Button color="danger" onClick={toggle}>Cancel</Button>
-            <Button color="primary" onClick={(a, b) => submitHandler(a, b)}>Save</Button>{' '}
+            <Button color="primary" type="submit">Save</Button>{' '}
                   
         </ModalFooter>
       </Modal>
