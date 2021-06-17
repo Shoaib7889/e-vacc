@@ -26,13 +26,31 @@ import superImg from '../../../images/people/a5.jpg'
 
 function SupervisorProfile() {
   
-  const [form, setForm] = useState({ name: '', email: null, password: null, contact: '', address: '' });
+  const [form, setForm] = useState({ name: '', email: null, password: null });
+  const [flag, setflag] = useState(false);
+  useEffect(() => {
+    const name = localStorage.getItem('name')
+    const email = localStorage.getItem('email')
+    const password=localStorage.getItem('password')
+    setForm(old => ({
+      ...old,
+      name: name,
+      email: email,
+      password:password
+    }))
+  },[])
   const inputHandler = (e) => {
     const obj = { ...form };
     obj[e.target.name] = e.target.value;
     setForm(obj);
   }
-  console.log('e ', form);
+  // console.log('e ', form);
+  const updateProfile = () => {
+    localStorage.setItem('name', form.name)
+    localStorage.setItem('email', form.email)
+    localStorage.setItem('password', form.password)
+    setflag(!flag);
+  }
     
   
   return (
@@ -54,18 +72,18 @@ function SupervisorProfile() {
           <Form >
             <FormGroup>
               <Label for="examplename">Name</Label>
-              <Input type="name" name="name" id="examplename" onChange={e => inputHandler(e)} placeholder="password placeholder" />
+              <Input type="name" name="name" value={form.name} id="examplename" onChange={e => inputHandler(e)} placeholder="password placeholder" />
             </FormGroup>
             <FormGroup>
               <Label for="exampleEmail">Email</Label>
-              <Input type="email" name="email" onChange={e => inputHandler(e)} id="exampleEmail" placeholder="with a placeholder" />
+              <Input type="email" name="email" value={form.email} onChange={e => inputHandler(e)} id="exampleEmail" placeholder="with a placeholder" />
             </FormGroup>
             <FormGroup>
               <Label for="examplePassword">Password</Label>
-              <Input type="password" name="password" id="examplePassword" onChange={e => inputHandler(e)} placeholder="password placeholder" />
+              <Input type="password" name="password" value={form.password} id="examplePassword" onChange={e => inputHandler(e)} placeholder="password placeholder" />
             </FormGroup>
             <FormGroup>
-              <Button className="bg-primary text-white mt-3">Update Profile</Button>
+              <Button className="bg-primary text-white mt-3" onClick={updateProfile}>Update Profile</Button>
             </FormGroup>
           </Form>
         </Col>

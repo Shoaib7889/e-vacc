@@ -17,12 +17,20 @@ import { Sparklines, SparklinesBars } from "react-sparklines";
 
 import Widget from "../../../components/Widget/Widget";
 import s from "./Static.module.scss";
+import { COUCHDB_BASE_URL } from '../../urls';
+// import { uuid } from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
+var md5 = require('md5');
+const axios = require('axios');
+global.Buffer = global.Buffer || require('buffer').Buffer
+
 
 class VaccinatedAreas extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      areas:[],
       tableStyles: [
         {
           id: 1,
@@ -61,9 +69,40 @@ class VaccinatedAreas extends React.Component {
       checkboxes2: [false, false, false, false, false, false],
       checkboxes3: [false, false, false, false, false, false],
     };
+    
 
     this.checkAll = this.checkAll.bind(this);
   }
+  componentDidMount(){
+    const token = Buffer.from(`${"admin"}:${"admin123"}`, 'utf8').toString('base64')
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${token}`,
+      }
+ 
+        const uid = uuid();
+    axios.post(`${COUCHDB_BASE_URL}/e-vaccination/_find`, {
+      'selector': {
+          'table':'houses'
+        }
+      },{
+        headers: headers
+      }).then(async response=>{
+          console.log(response.data)
+          if(response.data.docs.length>0){
+            this.setState(old => ({
+              ...old,
+              areas: response.data.docs
+            }))
+          }
+          return;
+        
+      }).catch(e=>{
+        console.log("Fdsa")
+        // alert('ok')
+      })    
+  }
+
 
   parseDate(date) {
     this.dateSet = date.toDateString().split(" ");
@@ -125,21 +164,30 @@ class VaccinatedAreas extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.tableStyles.map((row) => (
+                  {this.state.areas.length>0 ? this.state.areas.map((row,index) => row.status !=='warning' ? (
+                    <tr key={index}>
+                      <td>{index+1}</td>
+                      <td>{row.houseNo}</td>
+                      <td>
+                        {row.status ==='warning' ? 'Non vaccinated' :' Vaccinated'}
+                      </td>
+                      <td className="text-muted">{(parseInt(row.NoOfPeople))}</td>
+                      <td className="width-150">
+                        <Progress
+                          color={row.status ==='warning'?'danger':'success'}
+                          value={row.status ==='warning'?'50':'100'}
+                          className="progress-sm mb-xs"
+                        />
+                      </td>
+                    </tr>
+                  ):''): this.state.tableStyles.map((row) => (
                     <tr key={row.id}>
                       <td>{row.id}</td>
-                      <td>{row.name}</td>
+                      <td>{row.number}</td>
                       <td>
                         {row.description}
-                        {/* {row.label && (
-                          <div>
-                            <Badge color={row.label.colorClass}>
-                              {row.label.text}
-                            </Badge>
-                          </div>
-                        )} */}
                       </td>
-                      <td className="text-muted">{(row.date)}</td>
+                      <td className="text-muted">{(row.population)}</td>
                       <td className="width-150">
                         <Progress
                           color={row.progress.colorClass}

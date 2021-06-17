@@ -33,13 +33,14 @@ class Workers extends React.Component {
     super(props);
 
     this.state = {
-      records:[],
+      records: [],
+      flag:false,
       tableStyles: [
         {
           id: 1,
           name:'Shaoib',
           address:'Lahore',
-          contact:'2323'
+          contact:'2323',
           progress: {
             percent: 100,
             colorClass: "success",
@@ -49,7 +50,7 @@ class Workers extends React.Component {
           id: 2,
           name:'Shaoib',
           address:'Lahore',
-          contact:'2323'
+          contact:'2323',
           progress: {
             percent: 100,
             colorClass: "success",
@@ -59,7 +60,7 @@ class Workers extends React.Component {
           id: 3,
           name:'Shaoib',
           address:'Lahore',
-          contact:'2323'
+          contact:'2323',
           progress: {
             percent: 38,
             colorClass: "inverse",
@@ -69,7 +70,7 @@ class Workers extends React.Component {
           id: 4,
           name:'Shaoib',
           address:'Lahore',
-          contact:'2323'
+          contact:'2323',
           progress: {
             percent: 100,
             colorClass: "success",
@@ -79,7 +80,7 @@ class Workers extends React.Component {
           id: 5,
           name:'Shaoib',
           address:'Lahore',
-          contact:'2323'
+          contact:'2323',
           progress: {
             percent: 100,
             colorClass: "success",
@@ -97,19 +98,26 @@ class Workers extends React.Component {
   }
 
   componentDidMount(){
-    const token = Buffer.from(`${"admin"}:${"password"}`, 'utf8').toString('base64')
+    const token = Buffer.from(`${"admin"}:${"admin123"}`, 'utf8').toString('base64')
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${token}`,
       }
  
         const uid = uuid();
-      axios.get(`${COUCHDB_BASE_URL}/e-vaccination/_all_docs`,{
+    axios.post(`${COUCHDB_BASE_URL}/e-vaccination/_find`, {
+      'selector': {
+        'table':'workers'
+        }
+      }, {
         headers: headers
       }).then(async response=>{
           console.log(response.data)
-          if(response.data.length>0){
-            this.setState({records:response.data.rows})
+          if(response.data.docs.length>0){
+            this.setState(old => ({
+              ...old,
+              records: response.data.docs
+            }))
           }
           return;
         
@@ -155,6 +163,9 @@ class Workers extends React.Component {
       [checkbox]: this.state[checkbox],
     });
   }
+  flagChange() {
+    this.setState({...this.state,flag:!this.state.flag})
+  }
 
   render() {
     return (
@@ -164,7 +175,8 @@ class Workers extends React.Component {
           Workers - <span className="fw-semi-bold">Info
             <Button color="primary" className="ml-3" onClick={this.toggle}>Add worker</Button>
           </span>
-        <AddWorker
+          <AddWorker
+            // flagChange={flagChange}
           modal={this.state.visible}
           toggle={this.toggle}
         />
@@ -186,31 +198,25 @@ class Workers extends React.Component {
                   <tr className="fs-sm">
                     <th className="hidden-sm-down">#</th>
                     <th className="hidden-sm-down">Name</th>
+                    <th className="hidden-sm-down">Email</th>
                     <th className="hidden-sm-down">Address</th>
                     <th className="hidden-sm-down">Contact</th>
-                    <th className="hidden-sm-down">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.records.length>0 ? this.state.records.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.id}</td>
-                      
+                  {this.state.records?.length>0 ? this.state.records.map((row,index) => (
+                    <tr key={index}>
+                      <td>{index}</td>
                       <td>
                         <p className="mb-0">
                           {row.name}
                         </p>
                         
                       </td>
+                      <td className="text-muted">{(row.email)}</td>
                       <td className="text-muted">{(row.address)}</td>
                       <td className="text-muted">{row.contact}</td>
-                      <td className="width-150">
-                        <Progress
-                          color={row.progress.colorClass}
-                          value={row.progress.percent}
-                          className="progress-sm mb-xs"
-                        />
-                      </td>
+                      
                     </tr>
                   )): this.state.tableStyles.map((row) => (
                     <tr key={row.id}>
@@ -224,13 +230,7 @@ class Workers extends React.Component {
                       </td>
                       <td className="text-muted">{(row.address)}</td>
                       <td className="text-muted">{row.contact}</td>
-                      <td className="width-150">
-                        <Progress
-                          color={row.progress.colorClass}
-                          value={row.progress.percent}
-                          className="progress-sm mb-xs"
-                        />
-                      </td>
+                      
                     </tr>
                   ))}
                 </tbody>

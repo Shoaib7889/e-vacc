@@ -1,7 +1,9 @@
 export default [
   {
-    latitude: 31.5204,
-    longitude: 74.3587,
+    // latitude: 31.5204,
+    // longitude: 74.3587,
+    latitude: 31.694317,
+    longitude: 74.251145,
     size: 6,
     tooltip: 'Lahore',
     fill: "#F00"

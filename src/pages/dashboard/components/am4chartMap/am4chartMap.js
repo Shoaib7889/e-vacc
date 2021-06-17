@@ -80,7 +80,7 @@ import s from './am4chartMap.module.scss';
           <p className="h3 m-0">
             <span className="mr-xs fw-normal">
               <AnimateNumber
-                value={1656843} 
+                value={this.props.population+' 23'} 
                 initialValue={0}
                 duration={1000} 
                 stepPrecision={0}

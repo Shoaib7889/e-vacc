@@ -17,6 +17,7 @@ class Register extends React.Component {
         super(props);
 
         this.state = {
+            name:'',
             email: '',
             password: '',
             confirmPassword: ''
@@ -24,6 +25,7 @@ class Register extends React.Component {
 
         this.doRegister = this.doRegister.bind(this);
         this.changeEmail = this.changeEmail.bind(this);
+        this.changeName = this.changeName.bind(this);
         this.changePassword = this.changePassword.bind(this);
         this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
         this.checkPassword = this.checkPassword.bind(this);
@@ -32,6 +34,10 @@ class Register extends React.Component {
 
     changeEmail(event) {
         this.setState({email: event.target.value});
+    }
+
+    changeName(event) {
+        this.setState({name: event.target.value});
     }
 
     changePassword(event) {
@@ -66,6 +72,7 @@ class Register extends React.Component {
         } else {
             this.props.dispatch(registerUser({
                 creds: {
+                    name:this.state.name,
                     email: this.state.email,
                     password: this.state.password
                 },
@@ -99,6 +106,19 @@ class Register extends React.Component {
                                     </Alert>
                                 )
                             }
+                            <FormGroup className="mt">
+                                <Label for="name">Name</Label>
+                                <InputGroup className="input-group-no-border">
+                                    <InputGroupAddon addonType="prepend">
+                                        <InputGroupText>
+                                            <i className="la la-user text-white"/>
+                                        </InputGroupText>
+                                    </InputGroupAddon>
+                                    <Input id="name" className="input-transparent pl-3" value={this.state.name}
+                                           onChange={this.changeName} type="name"
+                                           required name="name" placeholder="Name"/>
+                                </InputGroup>
+                            </FormGroup>
                             <FormGroup className="mt">
                                 <Label for="email">Email</Label>
                                 <InputGroup className="input-group-no-border">

@@ -17,6 +17,13 @@ import { Sparklines, SparklinesBars } from "react-sparklines";
 
 import Widget from "../../../components/Widget/Widget";
 import s from "./Static.module.scss";
+import { COUCHDB_BASE_URL } from '../../urls';
+// import { uuid } from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
+var md5 = require('md5');
+const axios = require('axios');
+global.Buffer = global.Buffer || require('buffer').Buffer
+
 
 class Areas extends React.Component {
   constructor(props) {
@@ -85,19 +92,26 @@ class Areas extends React.Component {
   }
 
   componentDidMount(){
-    const token = Buffer.from(`${"admin"}:${"password"}`, 'utf8').toString('base64')
+    const token = Buffer.from(`${"admin"}:${"admin123"}`, 'utf8').toString('base64')
       const headers = {
         'Content-Type': 'application/json',
         'Authorization': `Basic ${token}`,
       }
  
         const uid = uuid();
-      axios.get(`${COUCHDB_BASE_URL}/e-vaccination/_all_docs`,{
+    axios.post(`${COUCHDB_BASE_URL}/e-vaccination/_find`, {
+      'selector': {
+          'table':'houses'
+        }
+      },{
         headers: headers
       }).then(async response=>{
           console.log(response.data)
-          if(response.data.length>0){
-            this.setState({areas:response.data.rows})
+          if(response.data.docs.length>0){
+            this.setState(old => ({
+              ...old,
+              areas: response.data.docs
+            }))
           }
           return;
         
@@ -167,18 +181,18 @@ class Areas extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.area.length>0 ? this.state.areas.map((row) => (
-                    <tr key={row.id}>
-                      <td>{row.id}</td>
-                      <td>{row.number}</td>
+                  {this.state.areas.length>0 ? this.state.areas.map((row,index) => (
+                    <tr key={index}>
+                      <td>{index+1}</td>
+                      <td>{row.houseNo}</td>
                       <td>
-                        {row.description}
+                        {row.status ==='warning' ? 'Non vaccinated' :' Vaccinated'}
                       </td>
-                      <td className="text-muted">{(row.population)}</td>
+                      <td className="text-muted">{(parseInt(row.NoOfPeople))}</td>
                       <td className="width-150">
                         <Progress
-                          color={row.progress.colorClass}
-                          value={row.progress.percent}
+                          color={row.status ==='warning'?'danger':'success'}
+                          value={row.status ==='warning'?'50':'100'}
                           className="progress-sm mb-xs"
                         />
                       </td>

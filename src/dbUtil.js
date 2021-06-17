@@ -89,5 +89,4 @@ const token = Buffer.from(`${"admin"}:${"password"}`, 'utf8').toString('base64')
         console.log("Fdsa")
         // alert('ok')
       })
-    }
-}
+    

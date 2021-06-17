@@ -20,6 +20,7 @@ export function registerError(payload) {
 export function registerUser(payload) {
     return (dispatch) => {
         if (payload.creds.email.length > 0 && payload.creds.password.length > 0) {
+            localStorage.setItem('name',payload.creds.name)
             localStorage.setItem('email',payload.creds.email)
             localStorage.setItem('password',payload.creds.password)
             toast.success("You've been registered successfully");

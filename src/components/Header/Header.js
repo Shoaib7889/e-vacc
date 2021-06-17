@@ -142,7 +142,7 @@ class Header extends React.Component {
             nav
             isOpen={this.state.notificationsOpen}
             toggle={this.toggleNotifications}
-            id="basic-nav-dropdown"
+            id="basic-nav-dropdown" 
             className={`${s.notificationsMenu}`}
             style={{ marginRight: "auto" }}
           > */}
@@ -152,7 +152,8 @@ class Header extends React.Component {
               >
                 <img src={avatar} alt="..." />
               </span>
-              <span className={`small ${s.accountCheck}`}>Supervisor</span>
+          <p className={`small ${s.accountCheck}`}>Supervisor </p>&nbsp;
+          <p className={``}>{ '  '}{localStorage.getItem('name').toUpperCase()}</p>
             {/* </DropdownToggle> */}
             {/* <DropdownMenu
               right

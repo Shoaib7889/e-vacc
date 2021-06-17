@@ -6,8 +6,10 @@ import Widget from "../../components/Widget";
 import Calendar from "./components/calendar/Calendar";
 import Map from "./components/am4chartMap/am4chartMap";
 import Rickshaw from "./components/rickshaw/Rickshaw";
-
 import AnimateNumber from "react-animated-number";
+
+
+
 
 import s from "./Dashboard.module.scss";
 
@@ -15,15 +17,81 @@ import peopleA1 from "../../images/people/a1.jpg";
 import peopleA2 from "../../images/people/a2.jpg";
 import peopleA5 from "../../images/people/a5.jpg";
 import peopleA4 from "../../images/people/a4.jpg";
+import { COUCHDB_BASE_URL } from '../urls';
+// import { uuid } from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
+const axios = require('axios');
+global.Buffer = global.Buffer || require('buffer').Buffer
 
 class Dashboard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      houses:null,
+      vaccinatedHouses: null,
+      nonVaccinatedHouses: null,
+      workers:null,
       graph: null,
       checkedArr: [false, false, false],
     };
     this.checkTable = this.checkTable.bind(this);
+  }
+
+  componentDidMount(){
+    const token = Buffer.from(`${"admin"}:${"admin123"}`, 'utf8').toString('base64')
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${token}`,
+      }
+ 
+        const uid = uuid();
+    axios.post(`${COUCHDB_BASE_URL}/e-vaccination/_find`, {
+      'selector': {
+        'table':'workers'
+        }
+      }, {
+        headers: headers
+      }).then(async response=>{
+          // console.log('fst ',response.data)
+        const noOfWorkers = response.data.docs.length;
+        this.setState(old => ({ old, workers: noOfWorkers }))
+        console.log('fst ', noOfWorkers);
+          return;
+        
+      }).catch(e=>{
+        console.log("Fdsa")
+        // alert('ok')
+      })
+    axios.post(`${COUCHDB_BASE_URL}/e-vaccination/_find`, {
+      'selector': {
+        'table':'houses'
+        }
+      }, {
+        headers: headers
+      }).then(async response=>{
+        const noOfHouses = response.data.docs.length;
+        let nonVacc=0;
+        response.data.docs.map(house => {
+          if (parseInt(house.NoOfPeopleNotVaccinated) > 0) {
+            nonVacc++ 
+          }
+        })
+        console.log('2nd ', noOfHouses, nonVacc);
+        
+        this.setState(old => ({
+          ...old,
+          houses: noOfHouses,
+          nonVaccinatedHouses: nonVacc,
+          vaccinatedHouses:noOfHouses-nonVacc
+        }))
+        
+          return;
+        
+      }).catch(e=>{
+        console.log("Fdsa")
+        // alert('ok')
+      })    
+    console.log('state ', this.state);
   }
 
   checkTable(id) {
@@ -66,7 +134,7 @@ class Dashboard extends React.Component {
         <Row>
           <Col lg={7}>
             <Widget className="bg-transparent">
-              <Map />
+              <Map population={this.state.houses} />
             </Widget>
           </Col>
           <Col lg={1} />
@@ -92,7 +160,7 @@ class Dashboard extends React.Component {
                 <span className="circle bg-default text-white">
                   <i className="fa fa-map-marker" />
                 </span>{" "}
-                &nbsp; 3 Cities, 14 Regions
+                &nbsp; 1 City, 14 Regions
               </p>
               {/* <div className="row progress-stats">
                 <div className="col-md-9 col-12">
@@ -116,7 +184,7 @@ class Dashboard extends React.Component {
                   <h6 className="name fw-semi-bold">Vaccinated</h6>
                   <Progress
                     color="success"
-                    value="80"
+                    value={String(this.state.vaccinatedHouses)+"0"}
                     className="bg-custom-dark progress-xs"
                   />
                 </div>
@@ -133,7 +201,7 @@ class Dashboard extends React.Component {
                   <h6 className="name fw-semi-bold">Non-Vaccinated</h6>
                   <Progress
                     color="danger"
-                    value="39"
+                    value={String(this.state.nonVaccinatedHouses)+"0"}
                     className="bg-custom-dark progress-xs"
                   />
                 </div>
@@ -181,17 +249,17 @@ class Dashboard extends React.Component {
               <div className="stats-row">
                 <div className="stat-item">
                   <h6 className="name">Overall Growth</h6>
-                  <p className="value">37 567 318</p>
+                  <p className="value">{String(this.state.vaccinatedHouses)+"0"} 567 318</p>
                 </div>
                 <div className="stat-item">
-                  <h6 className="name">Montly</h6>
-                  <p className="value">10.38%</p>
+                  {/* <h6 className="name">Montly</h6>
+                  <p className="value">10.38%</p> */}
                 </div>
                 
               </div>
               <Progress
                 color="success"
-                value="60"
+                value={String(this.state.vaccinatedHouses)+"0"}
                 className="bg-custom-dark progress-xs"
               />
               <p>
@@ -200,7 +268,7 @@ class Dashboard extends React.Component {
                     <i className="fa fa-chevron-up" />
                   </span>
                 </small>
-                <span className="fw-semi-bold">&nbsp;17% higher</span>
+                <span className="fw-semi-bold">&nbsp;17% lower</span>
                 &nbsp;than last month
               </p>
             </Widget>
@@ -210,7 +278,7 @@ class Dashboard extends React.Component {
               <div className="stats-row">
                 <div className="stat-item">
                   <h6 className="name">Overall Values</h6>
-                  <p className="value">17 567 318</p>
+                  <p className="value">{String(this.state.vaccinatedHouses)+"0"} 967 000</p>
                 </div>
                 <div className="stat-item">
                   {/* <h6 className="name">Montly</h6>
@@ -220,7 +288,7 @@ class Dashboard extends React.Component {
               </div>
               <Progress
                 color="danger"
-                value="60"
+                value={String(this.state.nonVaccinatedHouses)+"0"}
                 className="bg-custom-dark progress-xs"
               />
               <p>
@@ -229,7 +297,7 @@ class Dashboard extends React.Component {
                     <i className="fa fa-chevron-down" />
                   </span>
                 </small>
-                <span className="fw-semi-bold">&nbsp;8% lower</span>
+                <span className="fw-semi-bold">&nbsp;8% higher</span>
                 &nbsp;than last month
               </p>
             </Widget>
@@ -239,24 +307,24 @@ class Dashboard extends React.Component {
               <div className="stats-row">
                 <div className="stat-item">
                   <h6 className="name fs-sm">Total workers</h6>
-                  <p className="value">&nbsp;86</p>
+                  <p className="value">&nbsp;{this.state.workers}</p>
                 </div>
                 <div className="stat-item">
                   <h6 className="name fs-sm">Allocated workers</h6>
-                  <p className="value">70</p>
+                  <p className="value">{this.state.workers}</p>
                 </div>
                 <div className="stat-item">
                   <h6 className="name fs-sm">Non Allocated</h6>
-                  <p className="value">16</p>
+                  <p className="value">0</p>
                 </div>
               </div>
               <Progress
                 color="bg-primary"
-                value="60"
+                value="100"
                 className="bg-custom-dark progress-xs"
               />
               <p>
-                <span className="fw-semi-bold">&nbsp;90% on work</span>
+                {/* <span className="fw-semi-bold">&nbsp;90% on work</span> */}
               </p>
             </Widget>
           </Col>
@@ -287,7 +355,7 @@ class Dashboard extends React.Component {
                     <div>
                       <h6 className="m-0">Muhammad Shoaib</h6>
                       <p className="help-block text-ellipsis m-0">
-                        Ada Dhing Shah visited at 03-03-21
+                        Lahore Area is visited 
                       </p>
                     </div>
                   </button>
@@ -303,7 +371,7 @@ class Dashboard extends React.Component {
                     <div>
                       <h6 className="m-0">Abdul Rehman</h6>
                       <p className="help-block text-ellipsis m-0">
-                        Ada Dhing Shah visited at 03-03-21
+                        Lahore Area is visited 
                       </p>
                     </div>
                   </button>
@@ -319,7 +387,7 @@ class Dashboard extends React.Component {
                     <div>
                       <h6 className="m-0">Sameer Ameen</h6>
                       <p className="help-block text-ellipsis m-0">
-                        Ada Dhing Shah visited at 03-03-21
+                        Lahore Area is visited 
                       </p>
                     </div>
                   </button>
@@ -335,7 +403,7 @@ class Dashboard extends React.Component {
                     <div>
                       <h6 className="m-0">Shoaib</h6>
                       <p className="help-block text-ellipsis m-0">
-                        Ada Dhing Shah visited at 03-03-21
+                        Lahore Area is visited 
                       </p>
                     </div>
                   </button>

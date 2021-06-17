@@ -17,71 +17,51 @@ import { Sparklines, SparklinesBars } from "react-sparklines";
 
 import Widget from "../../../components/Widget/Widget";
 import s from "./Static.module.scss";
+import { COUCHDB_BASE_URL } from '../../urls';
+// import { uuid } from 'uuid/v4';
+import {v4 as uuid} from 'uuid';
+var md5 = require('md5');
+const axios = require('axios');
+global.Buffer = global.Buffer || require('buffer').Buffer
+
 
 class NonVaccinatedAreas extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      areas:[],
       tableStyles: [
         {
-          id: 3,
-          name:'#205',
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Partially Vaccinated",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
+          id: 1,
+          name:'#206',
+          picture: require("../../../images/tables/1.png"), // eslint-disable-line global-require
+          description: "Fully Vaccinated",
           info: {
             type: "JPEG",
             dimensions: "200x150",
           },
-          date: 4,
-          size: "49.0 KB",
+          date: 5,
+          size: "45.6 KB",
           progress: {
-            percent: 50,
-            colorClass: "danger",
+            percent: 100,
+            colorClass: "success",
           },
         },
         {
-          id: 4,
-          name:'#205',
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Not Vaccinated",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
+          id: 2,
+          name:'#204',
+          picture: require("../../../images/tables/2.png"), // eslint-disable-line global-require
+          description: "Fully Vaccinated",
           info: {
-            type: "JPEG",
-            dimensions: "200x150",
+            type: "PSD",
+            dimensions: "2400x1455",
           },
-          date: 4,
-          size: "49.0 KB",
+          date: 6,
+          size: "15.3 MB",
           progress: {
-            percent: 38,
-            colorClass: "inverse",
-          },
-        },
-        {
-          id: 5,
-          name:'#205',
-          picture: require("../../../images/tables/3.png"), // eslint-disable-line global-require
-          description: "Not Vaccinated",
-          label: {
-            colorClass: "primary",
-            text: "INFO!",
-          },
-          info: {
-            type: "JPEG",
-            dimensions: "200x150",
-          },
-          date: 4,
-          size: "49.0 KB",
-          progress: {
-            percent: 38,
-            colorClass: "inverse",
+            percent: 100,
+            colorClass: "success",
           },
         },
       ],
@@ -89,9 +69,40 @@ class NonVaccinatedAreas extends React.Component {
       checkboxes2: [false, false, false, false, false, false],
       checkboxes3: [false, false, false, false, false, false],
     };
+    
 
     this.checkAll = this.checkAll.bind(this);
   }
+  componentDidMount(){
+    const token = Buffer.from(`${"admin"}:${"admin123"}`, 'utf8').toString('base64')
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${token}`,
+      }
+ 
+        const uid = uuid();
+    axios.post(`${COUCHDB_BASE_URL}/e-vaccination/_find`, {
+      'selector': {
+          'table':'houses'
+        }
+      },{
+        headers: headers
+      }).then(async response=>{
+          console.log(response.data)
+          if(response.data.docs.length>0){
+            this.setState(old => ({
+              ...old,
+              areas: response.data.docs
+            }))
+          }
+          return;
+        
+      }).catch(e=>{
+        console.log("Fdsa")
+        // alert('ok')
+      })    
+  }
+
 
   parseDate(date) {
     this.dateSet = date.toDateString().split(" ");
@@ -126,7 +137,7 @@ class NonVaccinatedAreas extends React.Component {
     return (
       <div className={s.root}>
         <h2 className="page-title">
-          NonVaccinated - <span className="fw-semi-bold">Areas</span>
+          Vaccinated -<span className="fw-semi-bold">Areas</span>
         </h2>
         <Row>
           <Col>
@@ -153,21 +164,30 @@ class NonVaccinatedAreas extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {this.state.tableStyles.map((row) => (
+                  {this.state.areas.length>0 ? this.state.areas.map((row,index) => row.status ==='warning' ? (
+                    <tr key={index}>
+                      <td>{index+1}</td>
+                      <td>{row.houseNo}</td>
+                      <td>
+                        {row.status ==='warning' ? 'Non vaccinated' :' Vaccinated'}
+                      </td>
+                      <td className="text-muted">{(parseInt(row.NoOfPeople))}</td>
+                      <td className="width-150">
+                        <Progress
+                          color={row.status ==='warning'?'danger':'success'}
+                          value={row.status ==='warning'?'50':'100'}
+                          className="progress-sm mb-xs"
+                        />
+                      </td>
+                    </tr>
+                  ):''): this.state.tableStyles.map((row) => (
                     <tr key={row.id}>
                       <td>{row.id}</td>
-                      <td>{row.name}</td>
+                      <td>{row.number}</td>
                       <td>
                         {row.description}
-                        {/* {row.label && (
-                          <div>
-                            <Badge color={row.label.colorClass}>
-                              {row.label.text}
-                            </Badge>
-                          </div>
-                        )} */}
                       </td>
-                      <td className="text-muted">{(row.date)}</td>
+                      <td className="text-muted">{(row.population)}</td>
                       <td className="width-150">
                         <Progress
                           color={row.progress.colorClass}

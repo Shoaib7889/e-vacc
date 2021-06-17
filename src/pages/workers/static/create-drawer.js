@@ -16,7 +16,7 @@ const AddWorker = (props) => {
         toggle
     } = props;
 
-    const [form, setForm] = useState({ name: '', email: null, password: null, contact: '', address: '' });
+    const [form, setForm] = useState({ name: '', email: '', password: '', contact: '', address: '' });
     const inputHandler = (e) => {
         const obj = { ...form };
         obj[e.target.name] = e.target.value;
@@ -37,7 +37,7 @@ const AddWorker = (props) => {
       
     }
     else {
-      const token = Buffer.from(`${"admin"}:${"password"}`, 'utf8').toString('base64')
+      const token = Buffer.from(`${"admin"}:${"admin123"}`, 'utf8').toString('base64')
       const headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Authorization': `Basic ${token}`,
@@ -55,7 +55,8 @@ const AddWorker = (props) => {
       },{
         headers: headers
       }).then(async response=>{
-          console.log(response.data)
+        console.log(response.data)
+        // props.flagChange();
           return;
         
       }).catch(e=>{
@@ -74,49 +75,32 @@ const AddWorker = (props) => {
       <Modal isOpen={modal} toggle={toggle} className={className}>
         <ModalHeader toggle={toggle}>Modal title</ModalHeader>
         <ModalBody>
-            <form onSubmit={doLogin}>
+            <Form >
                 <FormGroup>
                     <Label for="examplename">Name</Label>
-                    <Input type="name" name="name" required id="examplename" onChange={e=>inputHandler(e)} placeholder="Enter name" />
-                </FormGroup>
-                <FormGroup className="mt">
-                    <Label for="email">Email</Label>
-                    <InputGroup className="input-group-no-border">
-                        <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                                <i className="la la-user text-white"/>
-                            </InputGroupText>
-                        </InputGroupAddon>
-                        <Input id="email" className="input-transparent pl-3" value={form.email} onChange={e=>inputHandler(e)} type="email"
-                               required name="email" placeholder="Email"/>
-                    </InputGroup>
+                    <Input type="name" name="name" required id="examplename" value={form.name} onChange={e=>inputHandler(e)} placeholder="Enter name" />
                 </FormGroup>
                 <FormGroup>
-                    <Label for="password">Password</Label>
-                    <InputGroup className="input-group-no-border">
-                        <InputGroupAddon addonType="prepend">
-                            <InputGroupText>
-                                <i className="la la-lock text-white"/>
-                            </InputGroupText>
-                        </InputGroupAddon>
-                        <Input id="password" className="input-transparent pl-3" value={form.password}
-                               onChange={e=>inputHandler(e)} type="password"
-                               required name="password" placeholder="Password"/>
-                    </InputGroup>
+                    <Label for="exampleemail">Email</Label>
+                    <Input type="email" name="email" required value={form.email} id="exampleemail" onChange={e=>inputHandler(e)} placeholder="Enter email" />
+                </FormGroup>
+                <FormGroup>
+                    <Label for="examplepassword">Password</Label>
+                    <Input type="password" name="password" required value={form.password} id="examplepassword" onChange={e=>inputHandler(e)} placeholder="Enter password" />
                 </FormGroup>
                 <FormGroup>
                     <Label for="examplecontact">Contact</Label>
-                    <Input type="contact" name="contact" required id="examplecontact" onChange={e=>inputHandler(e)} placeholder="Enter contact" />
+                    <Input type="contact" name="contact" required value={form.contact} id="examplecontact" onChange={e=>inputHandler(e)} placeholder="Enter contact" />
                 </FormGroup>
                 <FormGroup>
                     <Label for="exampleaddress">Address</Label>
-                    <Input type="address" name="address" required id="exampleaddress" onChange={e=>inputHandler(e)} placeholder="Enter address" />
+                    <Input type="address" name="address" required value={form.address} id="exampleaddress" onChange={e=>inputHandler(e)} placeholder="Enter address" />
                 </FormGroup>
-            </form>
+            </Form>
         </ModalBody>
         <ModalFooter>
             <Button color="danger" onClick={toggle}>Cancel</Button>
-            <Button color="primary" type="submit">Save</Button>{' '}
+            <Button color="primary" type="submit" onClick={doLogin}>Save</Button>{' '}
                   
         </ModalFooter>
       </Modal>
