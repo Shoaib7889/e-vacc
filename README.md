@@ -28,7 +28,7 @@ We have implemented some basic pages, so you can see our template in action.
 
 2. Get in the project folder
 ```shell
-cd one-react-template
+cd e-vacc
 ```
 3. Install dependencies via npm or yarn
 ```shell
