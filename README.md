@@ -1,39 +1,38 @@
+<p align="center">
+  <img src="/src/images/img1.png" alt="Logo">
+</p>
+<p align="center">
+  <img src="/src/images/img2.png" alt="Logo">
+</p>
+<p align="center">
+  <img src="/src/images/img3.png" alt="Logo">
+</p>
+
 ## Features
 
-* Bootstrap 4+ & SCSS
-* Responsive layout
-* React Chart.js
-* Simple login / logout 
-* Error page
-* Styled Bootstrap components like buttons, modals, etc
+- Bootstrap 4+ & SCSS
+- Responsive layout
+- React Chart.js
+- Simple login / logout
+- Error page
+- Styled Bootstrap components like buttons, modals, etc
 
-
-## Pages
-We have implemented some basic pages, so you can see our template in action.
-
-* Dashboard sample
-* Typography
-* Tables
-* Notifications
-* Charts
-* Icons
-* Maps
-* Chat
-* Login
-* Error page
-
-## Instalation 
+## Instalation
 
 1. Clone repository
 
 2. Get in the project folder
+
 ```shell
 cd e-vacc
 ```
+
 3. Install dependencies via npm or yarn
+
 ```shell
 npm install
 ```
+
 ```shell
-yarn
+npm start
 ```
